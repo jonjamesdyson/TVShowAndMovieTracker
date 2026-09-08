@@ -134,7 +134,7 @@ fun DashboardScreen(
                                 modifier = Modifier.size(18.dp)
                             )
                             Spacer(modifier = Modifier.width(6.dp))
-                            Text("Search My Series", fontSize = 13.sp)
+                            Text("Search", fontSize = 13.sp)
                         }
                     }
 
