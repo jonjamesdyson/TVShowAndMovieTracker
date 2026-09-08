@@ -1,0 +1,56 @@
+name: Build TV Show Tracker APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main, master ]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Generate Debug Keystore
+        run: |
+          keytool -genkey -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
+
+      - name: Build Debug APK
+        run: |
+          if [ -f "gradlew" ]; then
+            chmod +x gradlew
+            ./gradlew assembleDebug
+          else
+            gradle assembleDebug
+          fi
+
+      - name: Rename APK to TVShowTracker.apk
+        run: |
+          # Find the generated APK and copy it to TVShowTracker.apk in the workspace root
+          APK_PATH=$(find . -path "*/build/outputs/apk/debug/*.apk" | head -n 1)
+          cp "$APK_PATH" ./TVShowTracker.apk
+
+      - name: Upload to GitHub Releases
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest
+          name: "Latest App Build"
+          body: "Direct download link for the latest compiled TV Show and Movie Tracker app."
+          files: ./TVShowTracker.apk
+          # Overwrite the existing 'latest' tag release assets if it already exists
+          fail_on_unmatched_files: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
