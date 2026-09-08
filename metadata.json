@@ -1,0 +1,6 @@
+{
+  "name": "SeriesTracker",
+  "description": "Track watched TV shows, episode progress, custom lists, and statistics with TVmaze.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
